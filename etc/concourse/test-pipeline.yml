@@ -1,0 +1,292 @@
+---
+resources:
+  - name: abacus
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/cf-abacus.git
+      branch: master
+
+  - name: abacus-release-develop
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/cf-abacus.git
+      branch: develop
+
+  - name: abacus-release-master
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/cf-abacus.git
+      branch: master
+
+
+jobs:
+
+################################# POUCH ########################################
+
+  - name: pouchdb-6.2.0
+    plan:
+      - aggregate:
+        - get: abacus
+          trigger: true
+      - task: build
+        config:
+          platform: linux
+          image: docker:///node#6.2.0
+          inputs:
+            - name: abacus
+          outputs:
+            - name: built-project
+          run:
+            path: abacus/etc/concourse/scripts/pouch-build
+      - task: it
+        config:
+          platform: linux
+          image: docker:///node#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/pouch-it
+          params:
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+      - task: demo
+        config:
+          platform: linux
+          image: docker:///node#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/pouch-demo
+          params:
+            CI_START_TIMEOUT: 100000
+      - task: dupe
+        config:
+          platform: linux
+          image: docker:///node#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/noop
+          params:
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+      - task: perf
+        config:
+          platform: linux
+          image: docker:///node#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/pouch-perf
+          params:
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+
+################################# COUCH ########################################
+
+  - name: couchdb-6.2.0
+    plan:
+      - aggregate:
+        - get: abacus
+          passed: [pouchdb-6.2.0]
+          trigger: true
+      - task: build
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-couchdb#6.2.0
+          inputs:
+            - name: abacus
+          outputs:
+            - name: built-project
+          run:
+            path: abacus/etc/concourse/scripts/couch-build
+          params:
+            JOBS: 1
+            DB: http://localhost:5984
+      - task: it
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-couchdb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/couch-it
+          params:
+            JOBS: 1
+            DB: http://localhost:5984
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+      - task: demo
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-couchdb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/couch-demo
+          params:
+            JOBS: 1
+            DB: http://localhost:5984
+            CI_START_TIMEOUT: 100000
+      - task: dupe
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-couchdb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/noop
+          params:
+            JOBS: 1
+            DB: http://localhost:5984
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+      - task: perf
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-couchdb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/couch-perf
+          params:
+            JOBS: 1
+            DB: http://localhost:5984
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+
+################################# MONGO ########################################
+
+  - name: mongodb-6.2.0
+    plan:
+      - aggregate:
+        - get: abacus
+          passed: [couchdb-6.2.0]
+          trigger: true
+      - task: build
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-mongodb#6.2.0
+          inputs:
+            - name: abacus
+          outputs:
+            - name: built-project
+          run:
+            path: abacus/etc/concourse/scripts/mongo-build
+          params:
+            JOBS: 1
+            DB: mongodb://localhost:27017
+            DBCLIENT: abacus-mongoclient
+      - task: it
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-mongodb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/mongo-it
+          params:
+            JOBS: 1
+            DB: mongodb://localhost:27017
+            DBCLIENT: abacus-mongoclient
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+      - task: demo
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-mongodb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/mongo-demo
+          params:
+            JOBS: 1
+            DB: mongodb://localhost:27017
+            DBCLIENT: abacus-mongoclient
+            CI_START_TIMEOUT: 100000
+      - task: dupe
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-mongodb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/noop
+          params:
+            JOBS: 1
+            DB: mongodb://localhost:27017
+            DBCLIENT: abacus-mongoclient
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+      - task: perf
+        config:
+          platform: linux
+          image: docker:///godofcontainers/node-mongodb#6.2.0
+          inputs:
+            - name: built-project
+          run:
+            path: built-project/etc/concourse/scripts/mongo-perf
+          params:
+            JOBS: 1
+            DB: mongodb://localhost:27017
+            DBCLIENT: abacus-mongoclient
+            CI_START_TIMEOUT: 100000
+            CI_PIPELINE_TIMEOUT: 200000
+
+################################### CF #########################################
+
+  - name: cf-deploy
+    plan:
+      - aggregate:
+        - get: abacus
+          passed: [mongodb-6.2.0]
+          trigger: true
+      - task: infra
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: godofcontainers/ubuntu-14.04.4-cf
+              tag: 'latest'
+          inputs:
+            - name: abacus
+          params:
+            CF_API: {{cf-api}}
+            CF_USER: {{cf-user}}
+            CF_PASSWORD: {{cf-password}}
+            CF_ADMIN_USER: {{cf-admin-user}}
+            CF_ADMIN_PASSWORD: {{cf-admin-password}}
+            CF_ORG: {{cf-org}}
+            CF_SPACE: {{cf-space}}
+            CF_DOMAIN: {{cf-domain}}
+          run:
+            path: abacus/etc/concourse/scripts/cf-test-infra
+      - task: deploy
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: godofcontainers/node-mongodb
+              tag: '6.2.0'
+          inputs:
+            - name: abacus
+          params:
+            # Enable tests on CF (used in cftest script)
+            CF_TEST: true
+            # Save file handlers and offload CF stagers
+            JOBS: 2
+            # Use latest node.js buildpack to enable 5.11.1
+            BUILDPACK: https://github.com/cloudfoundry/nodejs-buildpack.git
+            # Cloud Foundry infrastructure
+            CF_API: {{cf-api}}
+            CF_USER: {{cf-user}}
+            CF_PASSWORD: {{cf-password}}
+            CF_ADMIN_USER: {{cf-admin-user}}
+            CF_ADMIN_PASSWORD: {{cf-admin-password}}
+            CF_ORG: {{cf-org}}
+            CF_SPACE: {{cf-space}}
+            CF_DOMAIN: {{cf-domain}}
+          run:
+            path: abacus/etc/concourse/scripts/cf-test-test

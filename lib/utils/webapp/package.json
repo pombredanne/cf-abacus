@@ -1,35 +1,59 @@
 {
-  "name": "cf-abacus-webapp",
-  "description": "Setup of Express in a Node cluster, a convenient starting point for Webapps",
-  "readme": "README.md",
-  "version": "0.0.1",
+  "name": "abacus-webapp",
+  "description": "Setup Express with a process cluster and a selection of useful Express middleware",
+  "license": "Apache-2.0",
+  "version": "0.0.6-dev.5",
   "private": true,
-  "main": "index.js",
+  "homepage": "https://github.com/cloudfoundry-incubator/cf-abacus/lib/utils/webapp",
+  "bugs": {
+    "url": "https://github.com/cloudfoundry-incubator/cf-abacus/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry-incubator/cf-abacus.git"
+  },
+  "keywords": [
+    "cf",
+    "abacus"
+  ],
+  "files": [
+    ".npmrc",
+    "webapp",
+    "lib/",
+    "src/"
+  ],
+  "main": "lib/index.js",
   "bin": {
     "webapp": "./webapp"
   },
   "scripts": {
+    "babel": "babel",
     "test": "eslint && mocha",
-    "lint": "eslint"
+    "lint": "eslint",
+    "pub": "publish"
   },
   "dependencies": {
-    "cf-abacus-cluster": "file:../cluster",
-    "cf-abacus-debug": "file:../debug",
-    "cf-abacus-es6runner": "file:../es6runner",
-    "cf-abacus-express": "file:../express",
-    "cf-abacus-hystrix": "file:../hystrix",
-    "cf-abacus-perf": "file:../perf",
-    "cf-abacus-vcapenv": "file:../vcapenv",
+    "abacus-cluster": "file:../cluster",
+    "abacus-debug": "file:../debug",
+    "abacus-eureka": "file:../eureka",
+    "abacus-express": "file:../express",
+    "abacus-hystrix": "file:../hystrix",
+    "abacus-perf": "file:../perf",
+    "abacus-rc": "file:../rc",
+    "abacus-vcapenv": "file:../vcapenv",
+    "babel-preset-es2015": "^6.6.0",
+    "commander": "^2.8.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "cf-abacus-eslint": "file:../../../tools/eslint",
-    "cf-abacus-mocha": "file:../../../tools/mocha",
-    "cf-abacus-request": "file:../request"
+    "abacus-babel": "file:../../../tools/babel",
+    "abacus-eslint": "file:../../../tools/eslint",
+    "abacus-mocha": "file:../../../tools/mocha",
+    "abacus-publish": "file:../../../tools/publish",
+    "abacus-request": "file:../request"
   },
   "engines": {
-    "node": ">=0.10.0",
-    "npm": ">=2.0.0"
-  },
-  "repository": {}
+    "node": ">=5.11.1",
+    "npm": ">=3.8.6"
+  }
 }

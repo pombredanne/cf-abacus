@@ -2,13 +2,20 @@ body {
   margin: 10px;
 }
 @media print {
-    .language-json, .language-js, .language-sh {
+    .language-json, .language-js, .language-sh, .language-graphql {
         font-family: "Monaco", monospace;
         font-size: 8px;
     }
 }
 @media screen {
-    .language-json, .language-js, .language-sh {
+    body {
+        max-width: 800px;
+        margin: auto;
+    }
+    img {
+        max-width: 800px;
+    }
+    .language-json, .language-js, .language-sh, .language-graphql {
         font-family: "Monaco", monospace;
         font-size: 10px;
     }

@@ -1,46 +1,69 @@
 {
-  "name": "cf-abacus-usage-accumulator",
+  "name": "abacus-usage-accumulator",
   "description": "Usage accumulator service",
-  "readme": "README.md",
-  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "version": "0.0.6-dev.5",
   "private": true,
-  "main": "index.js",
+  "homepage": "https://github.com/cloudfoundry-incubator/cf-abacus/lib/aggregation/accumulator",
+  "bugs": {
+    "url": "https://github.com/cloudfoundry-incubator/cf-abacus/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry-incubator/cf-abacus.git"
+  },
+  "keywords": [
+    "cf",
+    "abacus"
+  ],
+  "files": [
+    ".apprc",
+    ".npmrc",
+    "manifest.yml",
+    "lib/",
+    "src/"
+  ],
+  "main": "lib/index.js",
   "scripts": {
-    "start": "launch webappstart 4 9100",
-    "webappstart": "webapp start",
+    "start": "launch webapp start",
     "stop": "webapp stop",
+    "babel": "babel",
     "test": "eslint && mocha",
     "lint": "eslint",
-    "cfpush": "../../../tools/packapp/packapp && cf push"
+    "pub": "publish",
+    "cfpack": "cfpack",
+    "cfpush": "cfpush"
   },
   "dependencies": {
-    "cf-abacus-batch": "file:../../utils/batch",
-    "cf-abacus-breaker": "file:../../utils/breaker",
-    "cf-abacus-cluster": "file:../../utils/cluster",
-    "cf-abacus-dbclient": "file:../../utils/dbclient",
-    "cf-abacus-debug": "file:../../utils/debug",
-    "cf-abacus-lock": "file:../../utils/lock",
-    "cf-abacus-request": "file:../../utils/request",
-    "cf-abacus-retry": "file:../../utils/retry",
-    "cf-abacus-router": "file:../../utils/router",
-    "cf-abacus-seqid": "file:../../utils/seqid",
-    "cf-abacus-transform": "file:../../utils/transform",
-    "cf-abacus-urienv": "file:../../utils/urienv",
-    "cf-abacus-webapp": "file:../../utils/webapp",
-    "cf-abacus-yieldable": "file:../../utils/yieldable",
-    "cf-abacus-instance-launcher": "file:../launcher",
-    "cf-abacus-aggregation-db": "file:../db",
-    "cf-abacus-service-config": "file:../../config/service",
+    "abacus-oauth": "file:../../utils/oauth",
+    "abacus-cluster": "file:../../utils/cluster",
+    "abacus-dataflow": "file:../../utils/dataflow",
+    "abacus-debug": "file:../../utils/debug",
+    "abacus-launcher": "file:../../utils/launcher",
+    "abacus-metering-config": "file:../../config/metering",
+    "abacus-rating-config": "file:../../config/rating",
+    "abacus-router": "file:../../utils/router",
+    "abacus-seqid": "file:../../utils/seqid",
+    "abacus-timewindow": "file:../../utils/timewindow",
+    "abacus-transform": "file:../../utils/transform",
+    "abacus-urienv": "file:../../utils/urienv",
+    "abacus-webapp": "file:../../utils/webapp",
+    "abacus-yieldable": "file:../../utils/yieldable",
+    "babel-preset-es2015": "^6.6.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "cf-abacus-eslint": "file:../../../tools/eslint",
-    "cf-abacus-mocha": "file:../../../tools/mocha",
-    "cf-abacus-packapp": "file:../../../tools/packapp"
+    "abacus-babel": "file:../../../tools/babel",
+    "abacus-batch": "file:../../utils/batch",
+    "abacus-cfpack": "file:../../../tools/cfpack",
+    "abacus-cfpush": "file:../../../tools/cfpush",
+    "abacus-eslint": "file:../../../tools/eslint",
+    "abacus-mocha": "file:../../../tools/mocha",
+    "abacus-publish": "file:../../../tools/publish",
+    "abacus-request": "file:../../utils/request"
   },
   "engines": {
-    "node": ">=0.10.0",
-    "npm": ">=2.0.0"
-  },
-  "repository": {}
+    "node": ">=5.11.1",
+    "npm": ">=3.8.6"
+  }
 }

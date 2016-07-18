@@ -1,45 +1,53 @@
 CF-Abacus
 ===
 
-The Abacus Cloud service usage metering and aggregation project.
+The Abacus usage metering and aggregation service.
 
-[![Build Status](https://travis-ci.org/jsdelfino/cf-abacus.svg)](https://travis-ci.org/jsdelfino/cf-abacus)
+[![Build Status](https://travis-ci.org/cloudfoundry-incubator/cf-abacus.svg)](https://travis-ci.org/cloudfoundry-incubator/cf-abacus) [![Coverage Status](https://coveralls.io/repos/cloudfoundry-incubator/cf-abacus/badge.svg?branch=master&service=github)](https://coveralls.io/github/cloudfoundry-incubator/cf-abacus?branch=master) [![Slack Team](https://abacusdev-slack.mybluemix.net/badge.svg)](https://abacusdev-slack.mybluemix.net/) [![Gitter Chat](https://img.shields.io/badge/gitter-join%20chat-blue.svg)](https://gitter.im/cloudfoundry-incubator/cf-abacus?utm\_source=badge) [![IRC Chat](https://img.shields.io/badge/irc-%23abacusdev-blue.svg)](http://webchat.freenode.net?channels=%23abacusdev)
 
 Overview
 ---
 
 Abacus provides usage metering and aggregation for [Cloud Foundry (CF)](https://www.cloudfoundry.org) services. It is implemented as a set of REST micro-services that collect usage data, apply metering formulas, and aggregate usage at several levels within a Cloud Foundry organization.
 
-Abacus provides a REST API allowing Cloud service providers to submit usage data, and a REST API allowing usage dashboards, and billing systems to retrieve usage reports.
-
 Abacus is implemented in Node.js and the different micro-services can run as CF apps.
 
-The Abacus REST API is described in [doc/api.md](doc/api.md).
+This diagram shows the main Abacus services and their role in the processing of usage data. It also shows the services you can deploy around Abacus to integrate it into your Cloud platform.
 
-Installing
+![Abacus flow diagram](doc/flow.png)
+
+Abacus provides a REST API allowing Cloud service providers to submit usage data, and a REST API allowing usage dashboards, and billing systems to retrieve usage reports. The Abacus REST API is described in [doc/api.md](doc/api.md).
+
+For presentations related to CF-Abacus, see the [presentations](doc/presentations.md) page.
+
+Frequently Asked Questions (FAQs)
 ---
 
-Abacus can be installed using Npm >= 2.10.1.
+The Abacus FAQ can be found in [doc/faq.md](doc/faq.md).
+
+Building
+---
+
+Abacus requires Node.js >= 5.11.1 and Npm >= 3.8.6.
 
 ```sh
 cd cf-abacus
 
-# This installs all the Node.js module dependencies
-npm install
+# Bootstrap the build environment, run Babel on the Javascript sources,
+# install the Node.js module dependencies and run the tests
+npm run build
 ```
 
 Testing
 ---
 
-Abacus runs on Node.js >= 0.12.1, io.js >= 2.3.0, and can also run on Node 0.10.36-0.10.39 using Babel.
-
 ```sh
 cd cf-abacus
 
-# This runs eslint on all the modules
+# Run eslint on the Abacus modules
 npm run lint
 
-# This runs all the tests
+# Run the tests
 npm test
 ```
 
@@ -48,20 +56,16 @@ Deploying to Cloud Foundry
 
 Abacus runs as a set of applications deployed to Cloud Foundry. Each application is configured to run in multiple instances for availability and performance. Service usage data is stored in CouchDB databases.
 
-This diagram shows the main Abacus apps and their role in the processing of usage data.
-
-![Abacus flow diagram](doc/flow.png)
-
-The following steps assume a local Cloud Foundry deployment created using [Bosh-lite](https://github.com/cloudfoundry/bosh-lite) and running on the default local IP 10.244.0.34 assigned to that deployment. Please adjust to your particular Cloud Foundry deployment environment.
+The following steps assume a local Cloud Foundry deployment created using [Bosh-lite](https://github.com/cloudfoundry/bosh-lite), running on the default local IP assigned by the Bosh-lite CF installation script, and have been tested on CF v226.4. Please adjust to your particular Cloud Foundry deployment environment.
 
 ```sh
 cd cf-abacus
 
-# Point the CF CLI to your local Cloud Foundry deployment
-cf api --skip-ssl-validation https://api.10.244.0.34.xip.io
-cf login -o <your organization> -s <your space>
+# Point CF CLI to your local Cloud Foundry deployment and
+# create a CF security group for the Abacus apps
+bin/cfsetup
 
-# This simply runs cf push on all the Abacus apps to deploy them to Cloud Foundry
+# Run cf push on the Abacus apps to deploy them to Cloud Foundry
 npm run cfpush
 
 # Check the state of the Abacus apps
@@ -71,16 +75,18 @@ cf apps
 Getting apps in org <your organization> / space <your space>...
 OK
 
-name                          requested state   instances   memory   disk   urls   
-cf-abacus-usage-collector     started           2/2         512M     1G     cf-abacus-usage-collector.10.244.0.34.xip.io   
-cf-abacus-usage-meter         started           2/2         512M     1G     cf-abacus-usage-meter.10.244.0.34.xip.io 
-cf-abacus-usage-accumulator   started           4/4         512M     1G     cf-abacus-usage-accumulator.10.244.0.34.xip.io   
-cf-abacus-usage-aggregator    started           4/4         512M     1G     cf-abacus-usage-aggregator.10.244.0.34.xip.io   
-cf-abacus-usage-reporting     started           2/2         512M     1G     cf-abacus-usage-reporting.10.244.0.34.xip.io   
-cf-abacus-dbserver            started           1/1         1G       1G     cf-abacus-dbserver.10.244.0.34.xip.io   
+name                       requested state   instances   memory   disk   urls   
+abacus-usage-collector     started           1/1         512M     512M   abacus-usage-collector.both-lite.com   
+abacus-usage-meter         started           1/1         512M     512M   abacus-usage-meter.both-lite.com
+abacus-usage-accumulator   started           1/1         512M     512M   abacus-usage-accumulator.both-lite.com   
+abacus-usage-aggregator    started           1/1         512M     512M   abacus-usage-aggregator.both-lite.com   
+abacus-usage-reporting     started           1/1         512M     512M   abacus-usage-reporting.both-lite.com   
+abacus-provisioning-plugin started           1/1         512M     512M   abacus-provisioning-plugin.both-lite.com   
+abacus-account-plugin      started           1/1         512M     512M   abacus-account-plugin.both-lite.com   
+abacus-pouchserver         started           1/1         1G       512M   abacus-pouchserver.both-lite.com   
 ```
 
-Running the demo
+Running the demo on Cloud Foundry
 ---
 
 The Abacus demo runs a simple test program that simulates the submission of usage by a Cloud service provider, then gets a daily report for the usage aggregated within a Cloud Foundry organization.
@@ -93,7 +99,9 @@ Once the Abacus apps are running on your Cloud Foundry deployment, do this:
 cd cf-abacus
 
 # Run the demo script
-npm run demo 10.244.0.34.xip.io
+npm run demo -- \
+  --collector https://abacus-usage-collector.both-lite.com \
+  --reporting https://abacus-usage-reporting.both-lite.com
 
 # You should see usage being submitted and a usage report for the demo organization
 
@@ -119,6 +127,13 @@ npm run demo
 npm stop
 ```
 
+Metering Cloud Foundry app usage
+---
+
+Abacus comes with a CF [bridge](lib/cf/bridge) that acts as a resource provider for Cloud Foundry app runtime usage, reads Cloud Foundry [app usage events](http://apidocs.cloudfoundry.org/runtime-passed/app_usage_events/list_all_app_usage_events.html) and reports usage to the Abacus usage [collector](lib/metering/collector).
+
+In the end the Abacus CF bridge enables you to see runtime usage reports for the apps running on your Cloud Foundry instance. In order to start the CF bridge follow its [README](lib/cf/bridge/README.md).
+
 Layout
 ---
 
@@ -126,13 +141,13 @@ The Abacus source tree is organized as follows:
 
 ```sh
 
-bin/ - Start, stop, demo and cf push scripts 
+bin/ - Start, stop, demo and cf push scripts
 
 demo/ - Demo apps
 
     client - demo program that posts usage and gets a report
 
-doc/ - Abacus API documentation
+doc/ - API documentation
 
 lib/ - Abacus modules
 
@@ -143,25 +158,106 @@ lib/ - Abacus modules
 
     aggregation/ - Aggregation services
 
-        accumulator - accumulates usage over time
-        aggregator  - aggregates usage within an organization
+        accumulator - accumulates usage over time and applies
+                      pricing to accumulated usage
+        aggregator  - aggregates usage within an organization and applies
+                      pricing to aggregated usage
         reporting   - returns usage reports
 
-    config/ - Usage formula configuration
-    
-    rating/ - Rating services
-    
-        rate - applies pricing formulas to usage
+    cf/ - CF platform integration
+
+        bridge - collects CF app usage data
+
+    config/ - Usage formula and pricing configuration
 
     utils/ - Utility modules used by the above
 
-    stubs/ - Test stubs for provisioning and account services
+    plugins/ - Plugins for provisioning and account services
 
-test - End to end tests
+test/ - End to end tests
 
     perf/ - Performance tests
+
+tools/ - Build tools
 
 etc/ - Misc build scripts
 
 ```
 
+Developing individual Abacus modules
+---
+
+As shown in the above Layout section, Abacus consists of a number of Node.js modules under the [lib](lib) directory.
+
+When developing on Abacus you may want to quickly iterate through changes to a single module, and run the tests only for that module rather than rebuilding the whole project each time.
+
+Here are the steps most of us follow when we work on a single module, using the [collector](lib/metering/collector) module as an example.
+
+First, bootstrap your Abacus development environment:
+
+```sh
+cd cf-abacus
+
+# Setup the base Node.js tools and dependencies used by the Abacus build
+npm run bootstrap
+```
+
+Then install your module's dependencies as usual with npm:
+
+```sh
+cd cf-abacus/lib/metering/collector
+npm install
+```
+
+At this point your development cycle boils down to:
+
+```sh
+cd cf-abacus/lib/metering/collector
+
+# Run Babel.js to translate EcmaScript6 Javascript to ES5
+npm run babel
+
+# Run ESLint on your code and run the module's unit tests
+npm test
+```
+
+To run the collector app you can do this:
+
+```sh
+cd cf-abacus/lib/metering/collector
+npm start
+```
+
+To push the app to your Cloud Foundry instance, do this:
+
+```sh
+cd cf-abacus/lib/metering/collector
+npm run cfpush
+```
+
+Finally, to rebuild everything once you're happy with your module:
+```sh
+cd cf-abacus
+
+# Important to do at this point as the next step does a git clean
+git add <your changes>
+
+# Does a git clean to make sure the build starts fresh
+npm run clean
+
+# Build and unit test all the modules
+npm run build
+
+# Or to run what our Travis-CI build runs, including integration tests
+npm run cibuild
+```
+
+People
+---
+
+[List of all contributors](https://github.com/cloudfoundry-incubator/cf-abacus/graphs/contributors)
+
+License
+---
+
+  [Apache License 2.0](LICENSE)

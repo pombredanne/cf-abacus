@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e -x
+
+echo "Environment:"
+env | sort
+
+echo "Starting CouchDB ..."
+/usr/local/bin/couchdb -b
+
+pushd built-project
+  TIMEOUT=$(expr ${CI_START_TIMEOUT:-10000} / 1000)
+  echo "Using start timeout of $TIMEOUT seconds"
+
+  echo "Running demo ..."
+  npm start
+  sleep $TIMEOUT
+  npm run demo -t $CI_START_TIMEOUT -x $CI_PIPELINE_TIMEOUT
+
+  echo "Stopping Abacus ..."
+  npm stop
+popd
+
+echo "Deleting DB files ..."
+/usr/local/bin/couchdb -d
+set +e
+pkill -9 erlang
+rm -rf /var/lib/couchdb

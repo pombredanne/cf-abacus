@@ -1,20 +1,43 @@
 {
-  "name": "cf-abacus-doc",
-  "description": "The project documentation",
-  "readme": "README.md",
-  "version": "0.0.1",
+  "name": "abacus-doc",
+  "description": "The Abacus project documentation",
+  "license": "Apache-2.0",
+  "version": "0.0.6-dev.5",
   "private": true,
+  "homepage": "https://github.com/cloudfoundry-incubator/cf-abacus/doc",
+  "bugs": {
+    "url": "https://github.com/cloudfoundry-incubator/cf-abacus/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry-incubator/cf-abacus.git"
+  },
+  "keywords": [
+    "cf",
+    "abacus"
+  ],
+  "files": [
+    ".npmrc",
+    "api.md",
+    "flow.png"
+  ],
   "scripts": {
-    "doc": "cat api.md | mddoc >Abacus-API.html",
+    "doc": "npm run apidoc && npm run faqdoc && npm run confdoc && npm run designdoc",
+    "apidoc": "cat api.md | mddoc >api.html",
+    "faqdoc": "cat faq.md | mddoc >faq.html",
+    "confdoc": "cat conf.md | mddoc >conf.html",
+    "designdoc": "cat design.md | mddoc >design.html",
+    "babel": "true",
     "test": "true",
-    "lint": "true"
+    "lint": "true",
+    "pub": "publish"
   },
   "dependencies": {
-    "cf-abacus-mddoc": "file:../tools/mddoc"
+    "abacus-mddoc": "file:../tools/mddoc",
+    "abacus-publish": "file:../tools/publish"
   },
   "engines": {
-    "node": ">=0.10.0",
-    "npm": ">=2.0.0"
-  },
-  "repository": {}
+    "node": ">=5.11.1",
+    "npm": ">=3.8.6"
+  }
 }

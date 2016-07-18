@@ -1,0 +1,50 @@
+{
+  "name": "abacus-eureka",
+  "description": "A simple Netflix Eureka client",
+  "license": "Apache-2.0",
+  "version": "0.0.6-dev.5",
+  "private": true,
+  "homepage": "https://github.com/cloudfoundry-incubator/cf-abacus/lib/utils/eureka",
+  "bugs": {
+    "url": "https://github.com/cloudfoundry-incubator/cf-abacus/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry-incubator/cf-abacus.git"
+  },
+  "keywords": [
+    "cf",
+    "abacus"
+  ],
+  "files": [
+    ".npmrc",
+    "lib/",
+    "src/"
+  ],
+  "main": "lib/index.js",
+  "scripts": {
+    "babel": "babel",
+    "test": "eslint && mocha",
+    "lint": "eslint",
+    "pub": "publish"
+  },
+  "dependencies": {
+    "abacus-debug": "file:../debug",
+    "abacus-oauth": "file:../oauth",
+    "abacus-perf": "file:../perf",
+    "abacus-request": "file:../request",
+    "abacus-urienv": "file:../urienv",
+    "babel-preset-es2015": "^6.6.0"
+  },
+  "devDependencies": {
+    "abacus-babel": "file:../../../tools/babel",
+    "abacus-eslint": "file:../../../tools/eslint",
+    "abacus-mocha": "file:../../../tools/mocha",
+    "abacus-publish": "file:../../../tools/publish",
+    "underscore": "^1.8.3"
+  },
+  "engines": {
+    "node": ">=5.11.1",
+    "npm": ">=3.8.6"
+  }
+}

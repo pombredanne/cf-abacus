@@ -1,10 +1,5 @@
-retry
+throttle
 ===
 
-Small utility that throttles a function to a maximum number of concurrent executions.
-
-Usage
----
-
-TBD
+Throttle async function calls to a max number of concurrent calls.
 

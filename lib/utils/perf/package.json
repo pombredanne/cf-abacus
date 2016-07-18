@@ -1,26 +1,47 @@
 {
-  "name": "cf-abacus-perf",
-  "description": "Small utility that computes real time function call performance and reliability metrics.",
-  "readme": "README.md",
-  "version": "0.0.1",
+  "name": "abacus-perf",
+  "description": "Collect real time function call perf and reliability metrics",
+  "license": "Apache-2.0",
+  "version": "0.0.6-dev.5",
   "private": true,
-  "main": "index.js",
+  "homepage": "https://github.com/cloudfoundry-incubator/cf-abacus/lib/utils/perf",
+  "bugs": {
+    "url": "https://github.com/cloudfoundry-incubator/cf-abacus/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry-incubator/cf-abacus.git"
+  },
+  "keywords": [
+    "cf",
+    "abacus"
+  ],
+  "files": [
+    ".npmrc",
+    "lib/",
+    "src/"
+  ],
+  "main": "lib/index.js",
   "scripts": {
+    "babel": "babel",
     "test": "eslint && mocha",
-    "lint": "eslint"
+    "lint": "eslint",
+    "pub": "publish"
   },
   "dependencies": {
-    "cf-abacus-debug": "file:../debug",
-    "cf-abacus-events": "file:../events",
+    "abacus-debug": "file:../debug",
+    "abacus-events": "file:../events",
+    "babel-preset-es2015": "^6.6.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "cf-abacus-eslint": "file:../../../tools/eslint",
-    "cf-abacus-mocha": "file:../../../tools/mocha"
+    "abacus-babel": "file:../../../tools/babel",
+    "abacus-eslint": "file:../../../tools/eslint",
+    "abacus-mocha": "file:../../../tools/mocha",
+    "abacus-publish": "file:../../../tools/publish"
   },
   "engines": {
-    "node": ">=0.10.0",
-    "npm": ">=2.0.0"
-  },
-  "repository": {}
+    "node": ">=5.11.1",
+    "npm": ">=3.8.6"
+  }
 }

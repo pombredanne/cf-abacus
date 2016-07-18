@@ -1,5 +1,19 @@
 #!/bin/bash
 
+set -e
+
 # Stop all the Abacus services
-etc/apps | awk '{ printf "(cd node_modules/%s && npm stop &)\n", $1 }' | bash -e
+export CONF=default
+if [ -n "$1" ]; then
+  export CONF=$1
+fi
+
+for MODULE in $(node_modules/abacus-etc/apprc node_modules/abacus-etc/apps.rc $CONF apps); do
+  APPNAME=$(node_modules/abacus-etc/appname $MODULE)
+  if [ -z "$DB" -o -z "$DBCLIENT" -o $APPNAME != "abacus-pouchserver" ]; then
+    (cd node_modules/$APPNAME && npm stop)&
+  fi
+done
+
+wait
 

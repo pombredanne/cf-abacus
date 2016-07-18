@@ -1,13 +1,21 @@
 applications:
-- name: cf-abacus-usage-meter
-  host: cf-abacus-usage-meter
-  buildpack: https://github.com/cloudfoundry/buildpack-nodejs.git
-  path: app.zip
-  instances: 2
+- name: abacus-usage-meter
+  host: abacus-usage-meter
+  path: .cfpack/app.zip
+  instances: 1
   memory: 512M
-  disk_quota: 1G
+  disk_quota: 512M
   env:
+    CONF: default
+    DEBUG: e-abacus-*
+    ACCUMULATOR: abacus-usage-accumulator
+    PROVISIONING: abacus-provisioning-plugin
+    DB: abacus-pouchserver
+    EUREKA: abacus-eureka-plugin
     NODE_MODULES_CACHE: false
-    ACCUMULATOR: cf-abacus-usage-accumulator
-    COUCHDB: cf-abacus-dbserver
-
+    SECURED: false
+    # AUTH_SERVER:
+    # CLIENT_ID:
+    # CLIENT_SECRET:
+    # JWTKEY:
+    # JWTALGO:
